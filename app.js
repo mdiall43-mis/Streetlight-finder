@@ -210,7 +210,8 @@
 
     state.records.forEach(function (rec) {
       if (rec.isOpen) {
-        rec.age = (asOf - rec.created) / DAY_MS;
+        // Whole days, so the number shown always matches the flag (fix for boundary test B1).
+        rec.age = Math.floor((asOf - rec.created) / DAY_MS);
         if (rec.age < 0) { rec.flag = "future"; }
         else if (rec.age > threshold) rec.flag = "overdue";
         else if (rec.age > threshold - DUE_SOON_WINDOW) rec.flag = "soon";
