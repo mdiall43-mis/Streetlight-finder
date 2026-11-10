@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overdue Street Light Finder</title>
+  <meta name="description" content="Flags NYC 311 Street Light Out requests that are past the 10-day response target, so the oldest stuck requests get reviewed first.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1>Overdue Street Light Finder</h1>
+      <p class="tagline">For the NYC DOT Manhattan street lighting manager: see which "Street Light Out" requests are past the 10-day target, in priority order, for the weekly review.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- STEP 1: LOAD DATA -->
+    <section class="card" aria-labelledby="load-title">
+      <h2 id="load-title"><span class="step">1</span> Load requests</h2>
+      <p>Upload a 311 export as a CSV file. It needs these columns: <strong>Unique Key</strong>, <strong>Created Date</strong>, <strong>Closed Date</strong> and <strong>Status</strong>. Other columns are ignored.</p>
+      <div class="load-row">
+        <label class="btn btn-primary" for="file-input">Choose CSV file</label>
+        <input id="file-input" type="file" accept=".csv,text/csv" class="visually-hidden">
+        <button id="sample-btn" class="btn">Try the sample data (194 requests)</button>
+      </div>
+      <p class="small muted">Your file stays in your browser. Nothing is uploaded to a server. Sample data: NYC Open Data 311, DOT, Street Light Out, Manhattan, created July 1 to August 30, 2026 (every 3rd request).</p>
+      <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <!-- STEP 2: RULE SETTINGS -->
+    <section class="card" aria-labelledby="rule-title">
+      <h2 id="rule-title"><span class="step">2</span> Check the rule</h2>
+      <div class="settings">
+        <label>Flag open requests older than
+          <span class="inline-input"><input id="threshold" type="number" min="1" max="365" value="10" inputmode="numeric"> days</span>
+        </label>
+        <label>Count ages as of
+          <input id="asof" type="date">
+        </label>
+      </div>
+      <p class="small muted">10 days is the DOT response target. "Due soon" means an open request that will pass the target within 3 days.</p>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="results" hidden>
+      <div class="tiles" aria-label="Summary">
+        <div class="tile tile-red"><span class="tile-num" id="t-overdue">0</span><span class="tile-label">Overdue (open, past target)</span></div>
+        <div class="tile tile-amber"><span class="tile-num" id="t-soon">0</span><span class="tile-label">Due soon</span></div>
+        <div class="tile"><span class="tile-num" id="t-open">0</span><span class="tile-label">Open in total</span></div>
+        <div class="tile tile-green"><span class="tile-num" id="t-ontime">0%</span><span class="tile-label">Closed requests closed within target</span></div>
+        <div class="tile tile-grey"><span class="tile-num" id="t-issues">0</span><span class="tile-label">Rows with data problems</span></div>
+      </div>
+
+      <div class="card compare" aria-labelledby="compare-title">
+        <h2 id="compare-title">Why this list helps</h2>
+        <p id="compare-text"></p>
+        <div class="bars" aria-hidden="true">
+          <div class="bar-row"><span class="bar-label">Old way: list in date order</span><span class="bar"><span id="bar-old" class="bar-fill bar-old"></span></span><span id="bar-old-num" class="bar-num"></span></div>
+          <div class="bar-row"><span class="bar-label">This tool: overdue first</span><span class="bar"><span id="bar-new" class="bar-fill bar-new"></span></span><span id="bar-new-num" class="bar-num"></span></div>
+        </div>
+        <p class="small muted">Rows a person must read to be sure they have seen every overdue request.</p>
+      </div>
+
+      <section class="card" aria-labelledby="list-title">
+        <h2 id="list-title"><span class="step">3</span> Review the priority list</h2>
+        <p class="small">Requests are sorted by how long they have been open, oldest first. Record a review note for each one. Notes are saved in this browser only.</p>
+        <div class="tabs" role="tablist" aria-label="Filter the list">
+          <button role="tab" class="tab" data-view="overdue" aria-selected="true">Overdue <span class="count" id="c-overdue"></span></button>
+          <button role="tab" class="tab" data-view="soon" aria-selected="false">Due soon <span class="count" id="c-soon"></span></button>
+          <button role="tab" class="tab" data-view="open" aria-selected="false">All open <span class="count" id="c-open"></span></button>
+          <button role="tab" class="tab" data-view="closed" aria-selected="false">Closed <span class="count" id="c-closed"></span></button>
+          <button role="tab" class="tab" data-view="issues" aria-selected="false">Data problems <span class="count" id="c-issues"></span></button>
+        </div>
+        <div class="list-tools">
+          <input id="search" type="search" placeholder="Find a request number" aria-label="Find a request number">
+          <button id="export-btn" class="btn btn-primary">Download this list (CSV)</button>
+          <button id="clear-notes-btn" class="btn btn-quiet">Clear my review notes</button>
+        </div>
+        <div class="table-wrap">
+          <table id="table">
+            <thead id="thead"></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <p id="empty" class="empty" hidden>Nothing to show in this view.</p>
+      </section>
+    </section>
+
+    <section class="card limits" aria-labelledby="limits-title">
+      <h2 id="limits-title">Know the limits</h2>
+      <ul>
+        <li>"Closed" in 311 means DOT closed the case on paper. It does not prove the light was fixed.</li>
+        <li>The tool only sorts and flags. A person decides what to do with each request.</li>
+        <li>The 311 data does not say why a request is stuck. Use the review note (for example "Waiting on Con Edison") to record that.</li>
+        <li>Do not upload files that contain names, phone numbers or other personal details.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap footer small muted">
+    MIS 581S Project 2 prototype. Data: NYC Open Data, 311 Service Requests. Rule-based, no AI and no server.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
