@@ -288,7 +288,7 @@
   function columnsFor(view) {
     if (view === "issues") return ["Line in file", "Request #", "Created", "Closed", "Status", "Problem"];
     if (view === "closed") return ["Request #", "Created", "Closed", "Days to close", "Met target?"];
-    return ["Priority", "Request #", "Created", "Days open", "Status", "Flag", "Review note"];
+    return ["Priority", "Request #", "Created", "Days open", "311 status", "Flag", "Your note (next action)"];
   }
 
   function render() {
@@ -393,7 +393,7 @@
       out.push(["Request #", "Created", "Closed", "Days to close"]);
       rows.forEach(function (r) { out.push([r.id, isoDate(r.created), isoDate(r.closed), r.daysToClose.toFixed(1)]); });
     } else {
-      out.push(["Priority", "Request #", "Created", "Days open", "Status", "Flag", "Review note", "Note saved at"]);
+      out.push(["Priority", "Request #", "Created", "Days open", "311 status", "Flag", "Your note (next action)", "Note saved at"]);
       rows.forEach(function (r, i) {
         var n = state.notes[r.id] || {};
         out.push([i + 1, r.id, isoDate(r.created), Math.floor(r.age), r.status,
