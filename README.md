@@ -2,7 +2,7 @@
 
 A small web tool for the NYC DOT Manhattan street lighting manager. It reads a 311 export of "Street Light Out" requests, flags every open request that is past the 10-day response target, and lists them oldest first so the weekly review starts with the requests that are stuck.
 
-**Live site:** _add your Vercel link here_
+**Live site:** https://streetlight-finder.vercel.app/
 
 ## What it does
 - Loads a 311 CSV export (or the built-in sample of 194 requests).

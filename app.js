@@ -95,7 +95,7 @@
       .then(function (text) { handleText(text, "sample data"); })
       .catch(function () {
         // Fallback path: the sample file could not be reached.
-        showMessage("The sample data could not be loaded right now. Check your connection, or upload your own CSV file with the "Choose CSV file" button.", "error");
+        showMessage("The sample data could not be loaded right now. Check your connection, or upload your own CSV file with the 'Choose CSV file' button.", "error");
       });
   }
 
